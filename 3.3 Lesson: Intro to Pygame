@@ -1,0 +1,68 @@
+import pygame
+ 
+pygame.init()
+ 
+# Define colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+
+PLANET_COLOR_LIST = [ RED, BLUE, GREEN ]
+
+PI = 3.141592653
+ 
+# Set the height and width of the screen
+size = (700, 700)
+screen = pygame.display.set_mode(size)
+ 
+pygame.display.set_caption("Professor Craven's Cool Game")
+ 
+# Loop until the user clicks the close button.
+done = False
+clock = pygame.time.Clock()
+ 
+# Loop as long as done == False
+while not done:
+ 
+    for event in pygame.event.get():  # User did something
+        if event.type == pygame.QUIT:  # If user clicked close
+            done = True  # Flag that we are done so we exit this loop
+
+ 
+    # Clear the screen and set the screen background
+    screen.fill(BLACK)
+ 
+    # Draw an arc as part of an ellipse.
+    pygame.draw.arc(screen, YELLOW, [150, 200, 350, 190], 0, 2 * PI, 5)
+    pygame.draw.arc(screen, YELLOW, [100, 150, 520, 360], 0, 2 * PI, 5)
+
+    #draw stars
+    for i in range(10):
+        for j in range (10):
+            pygame.draw.circle(screen, WHITE, (10 + 80 * i, 10 + 80 * j), 3)
+
+    # draw 3 circles
+    for i in [0, 1, 2]:
+        # Move circles down and right by 100 every time i increases
+        # Decrease size of circles by 10 every time i increases
+        pygame.draw.circle(screen, PLANET_COLOR_LIST[i], (250 + 120 * i, 250 + 120 * i), 65 - 15 * i)
+
+    # Select the font to use, size, bold, italics
+    font = pygame.font.SysFont('Calibri', 25, True, False)
+ 
+    # Render the text. "True" means anti-aliased text.
+    # Black is the color. This creates an image of the
+    # letters, but does not put it on the screen
+    text = font.render("My Galaxy", True, WHITE)
+ 
+    # Put the image of the text on the screen at 250x250
+    screen.blit(text, [20, 20])
+ 
+    pygame.display.flip()
+ 
+    clock.tick(60)
+ 
+pygame.quit()
