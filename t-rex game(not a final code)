@@ -1,0 +1,82 @@
+import pygame
+pygame.init()
+
+
+WIDTH = 1400
+HEIGHT = 700
+size = (WIDTH, HEIGHT)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+screen = pygame.display.set_mode(size)
+GAME_PLAY = 'GAME_PLAY'
+GAME_OVER = 'GAME_OVER'
+curr_screen = GAME_PLAY
+
+pygame.display.set_caption("Cool Game")
+ 
+# Loop until the user clicks the close button.
+done = False
+clock = pygame.time.Clock()
+
+start_life = 3
+curr_life = 3
+heart = pygame.image.load('heart.png')
+heart_gap = 10
+
+font = pygame.font.SysFont('Calibri', 25, True, False)
+text = font.render(GAME_OVER, True, BLACK)
+
+rect1 = pygame.Rect(*screen.get_rect().center, 0, 0).inflate(75, 75)
+rect2 = pygame.Rect(0, 0, 75, 75)
+
+
+isFirst = False
+while not done:
+    # game page
+    if curr_screen == GAME_PLAY:
+        events = pygame.event.get()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        # colliding
+        rect2.center = pygame.mouse.get_pos()
+        collide = rect1.colliderect(rect2)
+        if collide and isFirst:
+            color = (255, 0, 0) 
+            curr_life -= 1
+            isFirst = False
+            print(curr_life) # <--- checking for code is working
+        elif not collide:
+            color = (255, 255, 255)
+            isFirst = True
+
+
+        # drawing
+        screen.fill(0)
+        pygame.draw.rect(screen, color, rect1)
+        pygame.draw.rect(screen, (0, 255, 0), rect2, 6, 1)
+
+        for i in range(curr_life):
+                screen.blit(heart, (0 + i * (heart.get_width() + heart_gap),0))
+
+        for i in range(start_life - curr_life):
+                pygame.draw.rect(screen,  BLACK, (0 + (start_life-i-1) * (heart.get_width() + heart_gap), 0, heart.get_width(), heart.get_width())) 
+
+
+        if curr_life == 0:
+            curr_screen = GAME_OVER
+
+    elif curr_screen == GAME_OVER:
+        screen.fill(WHITE)
+
+        # Put the image of the text on the screen at 250x250
+        screen.blit(text, [20, 20])
+
+        
+
+
+    pygame.display.flip()
+    clock.tick(60)
