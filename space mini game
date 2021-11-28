@@ -1,0 +1,254 @@
+import pygame
+import random
+import time
+
+from typing import Text
+from pygame.constants import MOUSEBUTTONDOWN, QUIT
+
+pygame.init()
+
+# Define some colors
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
+YELLOW = (249, 210, 54)
+RED = (180, 50, 0)
+WIDTH = 700
+HEIGHT = 700
+size = (WIDTH, HEIGHT)
+screen = pygame.display.set_mode(size)
+clock = pygame.time.Clock()
+
+# Screens
+MAIN_MENU = 'SELECT_MENU'
+LOG_MENU = 'LOG_MENU'
+CHECK_PWD_SCREEN = 'CHECK_PWD'
+ENTER_PWD_SCREEN = 'ENTER_PWD'
+LOADING_SCREEN = 'LOADING_SCREEN'
+curr_screen = MAIN_MENU
+
+# Font
+ARIAL = pygame.font.SysFont("Arial", 20)
+numpad_font = pygame.font.SysFont("Arial", 70)
+text_font = pygame.font.SysFont("Arial", 30)
+password_font = pygame.font.SysFont("Arial", 80)
+
+# Texts
+checkPwdOption = ARIAL.render("1. CHECK PASSWORD", True, BLACK, GREEN)
+checkPwdOptionRect = checkPwdOption.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+enterPwdOption = ARIAL.render("2. ENTER PASSWORD", True, BLACK, GREEN)
+enterPwdOptionRect = checkPwdOption.get_rect(center=[WIDTH/2, HEIGHT/2])
+
+pin_accepted = numpad_font.render(" PIN ACCEPTED", True, GREEN)
+pin_acceptedRect = pin_accepted.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+uploadLogOption = ARIAL.render("CLIKE HERE TO UPLOAD LOG FILES", True, WHITE, RED)
+uploadLogOptionRect = uploadLogOption.get_rect(center=[WIDTH/2, HEIGHT/2])
+
+# exitOption = ARIAL.render("2. EXIT", True, BLACK, GREEN)
+# exitOptionRect = exitOption.get_rect(center=[WIDTH/2, HEIGHT/2])
+
+loading = ARIAL.render(" Loading... ", True, WHITE, RED)
+success = ARIAL.render(" SUCCESS! ", True, GREEN)
+loadingRect= loading.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+
+# Generate password
+pin = str(random.randint(0, 9999))
+pin = "0"* (4-len(pin)) + pin
+number_input = ''
+password = ARIAL.render("PASSWORD IS " + pin, True, BLACK)
+passwordRect = password.get_rect(center=[WIDTH/2, HEIGHT/2])
+returnToMenu = ARIAL.render("CLICK HERE TO RETURN TO MENU", True, WHITE, RED)
+returnToMenuRect = returnToMenu.get_rect(center=[WIDTH/2, 600])
+
+# loading bar
+total = 100
+loading_progressed = 0
+loading_finished = False
+# loading_filler = pygame.Rect(10, 90)
+
+game_done = False
+while not game_done:
+    # Main Menu
+    if curr_screen == MAIN_MENU:
+        screen.fill(BLACK)
+        checkPwdBlit = screen.blit(checkPwdOption, checkPwdOptionRect.topleft)
+        enterPwdBlit = screen.blit(enterPwdOption, enterPwdOptionRect.topleft )
+
+        # EVENT HANDLING
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if checkPwdBlit.collidepoint(pos):
+                    curr_screen = CHECK_PWD_SCREEN
+                elif enterPwdBlit.collidepoint(pos):
+                    curr_screen = ENTER_PWD_SCREEN
+                    
+    # password cheking screen
+    elif curr_screen == CHECK_PWD_SCREEN:
+        screen.fill(BLACK)
+        pygame.draw.rect(screen,YELLOW, (WIDTH / 2 - 150, HEIGHT / 2 - 150, 300, 300))
+        pinBlit = screen.blit(password, passwordRect.topleft)
+        returnToMenuBlit = screen.blit(returnToMenu, returnToMenuRect.topleft)
+
+        # EVENT HANDLING
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if returnToMenuBlit.collidepoint(pos):
+                    curr_screen = MAIN_MENU
+    # Enter password screen
+    elif curr_screen == ENTER_PWD_SCREEN:
+        screen.fill(BLACK)
+        outerBorder = pygame.Rect(100, 50, 500, 600)
+        pygame.draw.rect(screen, GREEN, outerBorder, 5)
+        pygame.draw.rect(screen, GREEN, (195, 80, 310, 100), 5)      
+        
+        # numpad 1 - 9, delete, go back
+        numpad1 = pygame.Rect([0, 210, 90, 90])
+        numpad2 = pygame.Rect([0, 210, 90, 90])
+        numpad3 = pygame.Rect([0, 210, 90, 90])
+        numpad4 = pygame.Rect([0, 310, 90, 90])
+        numpad5 = pygame.Rect([0, 310, 90, 90])
+        numpad6 = pygame.Rect([0, 310, 90, 90])
+        numpad7 = pygame.Rect([0, 410, 90, 90])
+        numpad8 = pygame.Rect([0, 410, 90, 90])
+        numpad9 = pygame.Rect([0, 410, 90, 90])
+        numpad0 = pygame.Rect([0, 510, 90, 90])
+        numpad_goback = pygame.Rect([0, 510, 90, 90])
+        numpad_delete = pygame.Rect([0, 510, 90, 90])
+    
+
+        num0 = numpad_font.render("0", True, GREEN)
+        screen.blit(num0, (outerBorder.centerx -20, 520))
+        num1 = numpad_font.render("1", True, GREEN)
+        screen.blit(num1, (outerBorder.centerx - 120, 220))
+        num2 = numpad_font.render("2", True, GREEN)
+        screen.blit(num2, (outerBorder.centerx - 20, 220))
+        num3 = numpad_font.render("3", True, GREEN)
+        screen.blit(num3, (outerBorder.centerx + 80, 220))
+        num4 = numpad_font.render("4", True, GREEN)
+        screen.blit(num4, (outerBorder.centerx - 120, 320))
+        num5 = numpad_font.render("5", True, GREEN)
+        screen.blit(num5, (outerBorder.centerx -20, 320))
+        num6 = numpad_font.render("6", True, GREEN)
+        screen.blit(num6, (outerBorder.centerx + 80, 320))
+        num7 = numpad_font.render("7", True, GREEN)
+        screen.blit(num7, (outerBorder.centerx - 120, 420))
+        num8 = numpad_font.render("8", True, GREEN)
+        screen.blit(num8, (outerBorder.centerx - 20, 420))
+        num9 = numpad_font.render("9", True, GREEN)
+        screen.blit(num9, (outerBorder.centerx + 80, 420))
+        goback = text_font.render("GB", True, GREEN)
+        screen.blit(goback, (outerBorder.centerx - 120, 530))
+        delete = text_font.render("delete", True, GREEN)
+        screen.blit(delete, (outerBorder.centerx + 60, 530))
+
+        numpad0.centerx = outerBorder.centerx 
+        numpad1.centerx = outerBorder.centerx - 100
+        numpad2.centerx = outerBorder.centerx 
+        numpad3.centerx = outerBorder.centerx + 100
+        numpad4.centerx = outerBorder.centerx - 100
+        numpad5.centerx = outerBorder.centerx
+        numpad6.centerx = outerBorder.centerx + 100
+        numpad7.centerx = outerBorder.centerx - 100
+        numpad8.centerx = outerBorder.centerx 
+        numpad9.centerx = outerBorder.centerx + 100
+        numpad_goback.centerx = outerBorder.centerx - 100
+        numpad_delete.centerx = outerBorder.centerx + 100 
+
+        # draw numpad, goback, delete 
+        pygame.draw.rect(screen, GREEN, numpad0, 5)
+        pygame.draw.rect(screen, GREEN, numpad1, 5)
+        pygame.draw.rect(screen, GREEN, numpad2, 5)
+        pygame.draw.rect(screen, GREEN, numpad3, 5)
+        pygame.draw.rect(screen, GREEN, numpad4, 5)
+        pygame.draw.rect(screen, GREEN, numpad5, 5)
+        pygame.draw.rect(screen, GREEN, numpad6, 5)
+        pygame.draw.rect(screen, GREEN, numpad7, 5)
+        pygame.draw.rect(screen, GREEN, numpad8, 5)
+        pygame.draw.rect(screen, GREEN, numpad9, 5)
+        pygame.draw.rect(screen, GREEN, numpad_goback, 5)
+        pygame.draw.rect(screen, GREEN, numpad_delete, 5)
+        # ------------------------------------------------------
+
+        # password input 
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if numpad0.collidepoint(pos):
+                    number_input += '0'
+                elif numpad1.collidepoint(pos):
+                    number_input += '1'
+                elif numpad2.collidepoint(pos):
+                    number_input += '2'
+                elif numpad3.collidepoint(pos):
+                    number_input += '3'
+                elif numpad4.collidepoint(pos):
+                    number_input += '4'
+                elif numpad5.collidepoint(pos):
+                    number_input += '5'
+                elif numpad6.collidepoint(pos):
+                    number_input += '6'
+                elif numpad7.collidepoint(pos):
+                    number_input += '7'
+                elif numpad8.collidepoint(pos):
+                    number_input += '8'
+                elif numpad9.collidepoint(pos):
+                    number_input += '9'
+                elif numpad_goback.collidepoint(pos):
+                    curr_screen = MAIN_MENU
+                elif numpad_delete.collidepoint(pos):
+                    number_input = number_input[:-1]
+
+        display_inputnum = password_font.render(number_input, True, GREEN)
+        screen.blit(display_inputnum, (210, 80))
+
+        if len(number_input) == 0:
+            print("ENTER PIN")
+        elif pin != number_input: #(add reset when len(number_input is over 4)
+            print("INCORRECT PIN. TRY AGAIN.")
+            #여기서는 pin이 입력되지 않아도 incorrect pin 이라고 떠요 ㅜㅡㅜ
+        else:
+            print("PIN ACCEPTED")
+            curr_screen = LOG_MENU
+            
+            
+    
+    # Loading screen after pin is correct
+    elif curr_screen == LOG_MENU:
+        screen.fill(BLACK)
+        uploadLogBlit = screen.blit(uploadLogOption, uploadLogOptionRect.topleft)
+        askingBlit = screen.blit(pin_accepted, pin_acceptedRect.topleft)
+        
+        # EVENT HANDLING
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if uploadLogBlit.collidepoint(pos):
+                    curr_screen = LOADING_SCREEN
+
+    elif curr_screen == LOADING_SCREEN:
+        screen.fill(BLACK)
+        loading_bar = screen.blit(loading, loadingRect.topleft)
+        pygame.draw.rect(screen, GREEN, (WIDTH/2 - 250, HEIGHT/2 - 50, 500, 100), 5) 
+        
+        if not loading_finished:
+            for i in range(10):
+                pygame.draw.rect(screen, GREEN, pygame.Rect((WIDTH/2 - 240) + i * 49 , (HEIGHT/2 - 40), 40, 80))
+                print("timesleep" + str(i))
+                time.sleep(1)
+                i += 1
+            # 여기서 foor loop이 한바퀴 돌아야 loading screen 으로 넘어가요 ㅜㅡㅜ
+            
+
+    pygame.display.flip()
+    clock.tick(60)
+
+
+pygame.quit()
+
+
