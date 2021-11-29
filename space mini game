@@ -69,12 +69,6 @@ passwordRect = password.get_rect(center=[WIDTH/2, HEIGHT/2])
 returnToMenu = ARIAL.render("CLICK HERE TO RETURN TO MENU", True, WHITE, RED)
 returnToMenuRect = returnToMenu.get_rect(center=[WIDTH/2, 600])
 
-# loading bar
-total = 100
-loading_progressed = 0
-loading_finished = False
-# loading_filler = pygame.Rect(10, 90)
-
 game_done = False
 while not game_done:
     # Main Menu
