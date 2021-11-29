@@ -21,10 +21,11 @@ clock = pygame.time.Clock()
 
 # Screens
 MAIN_MENU = 'SELECT_MENU'
-LOG_MENU = 'LOG_MENU'
+PINACCEPTED_SCREEN = 'PINACCEPTED_SCREEN'
 CHECK_PWD_SCREEN = 'CHECK_PWD'
 ENTER_PWD_SCREEN = 'ENTER_PWD'
 LOADING_SCREEN = 'LOADING_SCREEN'
+INCORRECT_SCREEN = 'INCORRECT_SCREEN'
 curr_screen = MAIN_MENU
 
 # Font
@@ -36,16 +37,24 @@ password_font = pygame.font.SysFont("Arial", 80)
 # Texts
 checkPwdOption = ARIAL.render("1. CHECK PASSWORD", True, BLACK, GREEN)
 checkPwdOptionRect = checkPwdOption.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+
 enterPwdOption = ARIAL.render("2. ENTER PASSWORD", True, BLACK, GREEN)
 enterPwdOptionRect = checkPwdOption.get_rect(center=[WIDTH/2, HEIGHT/2])
 
 pin_accepted = numpad_font.render(" PIN ACCEPTED", True, GREEN)
 pin_acceptedRect = pin_accepted.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+
 uploadLogOption = ARIAL.render("CLIKE HERE TO UPLOAD LOG FILES", True, WHITE, RED)
 uploadLogOptionRect = uploadLogOption.get_rect(center=[WIDTH/2, HEIGHT/2])
 
-# exitOption = ARIAL.render("2. EXIT", True, BLACK, GREEN)
-# exitOptionRect = exitOption.get_rect(center=[WIDTH/2, HEIGHT/2])
+incorrect = text_font.render("INCORRECT PIN. TRY AGAIN.", True, GREEN)
+incorrectRect = incorrect.get_rect(center=[WIDTH/2, HEIGHT/2 - 100])
+
+incorrect_goback = ARIAL.render(" CLIKE HERE TO GO BACK ", True, WHITE, RED)
+incorrect_gobackRect = incorrect_goback.get_rect(center=[WIDTH/2, HEIGHT/2])
+
+exitOption = ARIAL.render("2. EXIT", True, BLACK, GREEN)
+exitOptionRect = exitOption.get_rect(center=[WIDTH/2, HEIGHT/2])
 
 loading = ARIAL.render(" Loading... ", True, WHITE, RED)
 success = ARIAL.render(" SUCCESS! ", True, GREEN)
@@ -206,22 +215,34 @@ while not game_done:
         display_inputnum = password_font.render(number_input, True, GREEN)
         screen.blit(display_inputnum, (210, 80))
 
-        if len(number_input) == 0:
-            print("ENTER PIN")
-        elif pin != number_input: #(add reset when len(number_input is over 4)
-            print("INCORRECT PIN. TRY AGAIN.")
-            #여기서는 pin이 입력되지 않아도 incorrect pin 이라고 떠요 ㅜㅡㅜ
-        else:
-            print("PIN ACCEPTED")
-            curr_screen = LOG_MENU
-            
-            
-    
+
+        if len(number_input) == 4:
+            if pin != number_input: #(add reset when len(number_input is over 4)
+                print("INCORRECT PIN. TRY AGAIN.")
+                curr_screen = INCORRECT_SCREEN
+                
+            else:
+                print("PIN ACCEPTED")
+                curr_screen = PINACCEPTED_SCREEN      
+    # if pin is not correct
+    elif curr_screen == INCORRECT_SCREEN:
+        screen.fill(BLACK)
+        incorrect_gobackBlit = screen.blit(incorrect_goback, incorrect_gobackRect.topleft)
+        incorrectBlit = screen.blit(incorrect, incorrectRect.topleft)
+
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if incorrect_gobackBlit.collidepoint(pos):
+                    curr_screen = ENTER_PWD_SCREEN
+                    number_input = ''
+
     # Loading screen after pin is correct
-    elif curr_screen == LOG_MENU:
+    elif curr_screen == PINACCEPTED_SCREEN:
         screen.fill(BLACK)
         uploadLogBlit = screen.blit(uploadLogOption, uploadLogOptionRect.topleft)
-        askingBlit = screen.blit(pin_accepted, pin_acceptedRect.topleft)
+        aceeptedBlit = screen.blit(pin_accepted, pin_acceptedRect.topleft)
         
         # EVENT HANDLING
         for event in pygame.event.get():
@@ -239,9 +260,10 @@ while not game_done:
         if not loading_finished:
             for i in range(10):
                 pygame.draw.rect(screen, GREEN, pygame.Rect((WIDTH/2 - 240) + i * 49 , (HEIGHT/2 - 40), 40, 80))
-                print("timesleep" + str(i))
                 time.sleep(1)
+                print("timesleep" + str(i))
                 i += 1
+        
             # 여기서 foor loop이 한바퀴 돌아야 loading screen 으로 넘어가요 ㅜㅡㅜ
             
 
@@ -250,5 +272,6 @@ while not game_done:
 
 
 pygame.quit()
+
 
 
