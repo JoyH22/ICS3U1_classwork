@@ -1,0 +1,21 @@
+# Copying Lists
+
+from random import randrange 
+list1 = []
+for i in range(10):
+    random_number = str(randrange(1,100))
+    list1.append(random_number)
+list2 = list1.copy()
+list1.pop()
+list1.append(-7)
+print(list1)
+print(list2)
+
+# ----------------------------------------------
+# input Lists
+
+my_list = []
+while True:
+    adding_number = input("add a number to the list: ")
+    my_list.append(adding_number)
+    print(my_list)
