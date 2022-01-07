@@ -1,0 +1,74 @@
+# Basic Lists 0
+basic_list0 = []
+
+basic_list0.append(0)
+basic_list0.append(1)
+basic_list0.append(2)
+basic_list0.append(3)
+basic_list0.append(4)
+basic_list0.append(5)
+basic_list0.append(6)
+basic_list0.append(7)
+basic_list0.append(8)
+basic_list0.append(9)
+
+print(f"Slot {basic_list0[0]} contains a -113")
+print(f"Slot {basic_list0[1]} contains a -113")
+print(f"Slot {basic_list0[2]} contains a -113")
+print(f"Slot {basic_list0[3]} contains a -113")
+print(f"Slot {basic_list0[4]} contains a -113")
+print(f"Slot {basic_list0[5]} contains a -113")
+print(f"Slot {basic_list0[6]} contains a -113")
+print(f"Slot {basic_list0[7]} contains a -113")
+print(f"Slot {basic_list0[8]} contains a -113")
+print(f"Slot {basic_list0[9]} contains a -113")
+
+# ----------------------------------------------
+# Basic Lists 1
+
+basic_list1 = []
+for i in range(10):
+    basic_list1.append(i)
+    i += 1
+
+for i in range(len(basic_list1)):
+    print(f"Slot {basic_list1[i]} contains a -113")
+    i += 1
+# ----------------------------------------------
+# Basic List 2
+
+from random import randrange 
+
+basic_list2 = []
+for i in range(10):
+    basic_list2.append(i)
+    i += 1
+
+for i in range(len(basic_list2)):
+    random_number = randrange(101)
+    print(f"Slot {basic_list2[i]} contains a {random_number}")
+    i += 1
+# ----------------------------------------------
+# Basic List 3
+
+from random import randrange 
+basic_list3 = []
+for i in range(1000):
+    random_number = str(randrange(10,99))
+    basic_list3.append(random_number)
+print('  '.join(basic_list3))
+# ----------------------------------------------
+# Copying Lists
+
+from random import randrange 
+list1 = []
+for i in range(10):
+    random_number = str(randrange(1,100))
+    list1.append(random_number)
+list2 = list1.copy()
+list1.pop()
+list1.append(-7)
+print(list1)
+print(list2)
+
+
