@@ -1,0 +1,8 @@
+animals = ['rabbit', 'lion', 'dog', 'cat', 'camel', 'koala', 'giraffe', 'fox', 'owl', 'deer', 'sheep', 'kangaroo']
+
+count = 0
+for word in animals:
+    if word.startswith('k'):
+        print(word)
+
+print(count)
