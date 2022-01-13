@@ -4,5 +4,6 @@ count = 0
 for word in animals:
     if word.startswith('k'):
         print(word)
+        count += 1
 
 print(count)
