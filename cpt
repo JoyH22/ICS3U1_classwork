@@ -1,0 +1,302 @@
+import pygame
+import random
+
+from pygame.constants import MOUSEBUTTONDOWN
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT
+
+# scree set up
+WIDTH = 1200
+HEIGHT = 800
+SIZE = (WIDTH, HEIGHT)
+screen = pygame.display.set_mode(SIZE)
+pygame.display.set_caption('SNOW FIGHT')
+currn_screen = 'main_menu'
+clock = pygame.time.Clock()
+
+class Score():
+    # player 1 and 2 score
+    def __init__(self):
+        self.s1_score = 0
+        self.s2_score = 0
+    
+    # get scored if player hits other player 
+    def s1_scored(self):
+        self.s1_score += 1
+
+    def s2_scored(self):
+        self.s2_score += 1
+    # reset score when game is over
+    def reset_score(self):
+        self.s1_score = 0
+        self.s2_score = 0
+
+    # draw score 
+    def draw_score(self):
+        life_player1 = [
+            [30, 30],
+            [70, 30],
+            [110, 30]
+        ]
+
+        life_player2 = [
+            [WIDTH - 30, 30],
+            [WIDTH - 70, 30],
+            [WIDTH - 110, 30]
+        ]
+        # loop - score lose and drawing
+        for life in life_player2[:3 - self.s1_score]:
+            x = life[0]
+            y = life[1]
+            pygame.draw.circle(screen, (0, 0, 0), (x, y), 15)
+
+        for life in life_player1[:3 - self.s2_score]:
+            x = life[0]
+            y = life[1]
+            pygame.draw.circle(screen, (0, 0, 0), (x, y), 15)
+
+        print(str(self.s1_score) + " : " + str(self.s2_score))
+
+# snowman 1 - (player 1)
+class Snowman1(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        # img of snowman 1
+        self.image = pygame.transform.scale(
+            pygame.image.load('snowman1.png').convert_alpha()
+            , (100, 100)
+        )
+        self.initial_position = (self.image.get_width() // 2, HEIGHT - self.image.get_height() // 2)
+        self.rect = self.image.get_rect(center = self.initial_position)
+    # player 1's keys
+    def update(self):
+        pressed_key = pygame.key.get_pressed()
+        if pressed_key[pygame.K_a] and self.rect.midleft[0] > 0:
+            self.rect.centerx -= 5
+        elif pressed_key[pygame.K_d] and self.rect.midright[0] < wallRect.left:
+            self.rect.centerx += 5
+        elif pressed_key[pygame.K_w] and self.rect.midbottom[1] > snowbackground.top:
+            self.rect.centery -= 5
+        elif pressed_key[pygame.K_s] and self.rect.midbottom[1] < HEIGHT:
+            self.rect.centery += 5
+    # get return from snowball class
+    def shoot_snowball(self):
+        return Snowball(self.rect.topright[0], self.rect.topright[1], 1)
+    # reset position for restart games
+    def reset_position(self):
+        self.rect.center = self.initial_position
+
+
+class Snowman2(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        # img of snowman 2
+        self.image = pygame.transform.scale(
+            pygame.image.load('snowman2.png').convert_alpha()
+            , (100, 100)
+        )
+        self.initial_position = (WIDTH - self.image.get_width() // 2, HEIGHT - self.image.get_height() // 2)
+        self.rect = self.image.get_rect(center = self.initial_position)
+    # player2's keys
+    def update(self):
+        pressed_key = pygame.key.get_pressed()
+        if pressed_key[pygame.K_LEFT] and self.rect.midleft[0] > wallRect.right:
+            self.rect.centerx -= 5
+        elif pressed_key[pygame.K_RIGHT] and self.rect.midright[0] < WIDTH:
+            self.rect.centerx += 5
+        elif pressed_key[pygame.K_UP] and self.rect.midbottom[1] > snowbackground.top:
+            self.rect.centery -= 5
+        elif pressed_key[pygame.K_DOWN] and self.rect.midbottom[1] < HEIGHT:
+            self.rect.centery += 5
+    # get return from snowball class
+    def shoot_snowball(self):
+        return Snowball(self.rect.topleft[0], self.rect.topleft[1], 2)
+    # reset position for restart game
+    def reset_position(self):
+        self.rect.center = self.initial_position
+
+# snowball
+class Snowball(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, player=1):
+        super().__init__()
+        # img of snowball
+        snowball = pygame.transform.scale(
+            pygame.image.load('snowball.png').convert_alpha()
+        , (25, 25))
+        self.image = snowball
+        self.rect = self.image.get_rect(center = (pos_x, pos_y))
+        self.player = player
+
+    def update(self, s1, s2, score):
+        if self.player == 1:
+            self.rect.x += 5
+        else: # player == 2:
+            self.rect.x -= 5
+        # remove snowball when snowball gets out of the screen
+        if self.rect.x >= WIDTH or self.rect.x <= 0:
+            self.kill()
+        
+        # collide -- snowball and players
+        if self.player == 1:
+            if abs(self.rect.x - s2.rect.left) <= 5 and s2.rect.top <= self.rect.y <= s2.rect.bottom:
+                print("snowman 1 ball hit snowman 2")
+                score.s1_scored()
+                self.kill()
+
+        else: # player == 2:
+            if abs(self.rect.x - s1.rect.right) <= 5 and s1.rect.top <= self.rect.y <= s1.rect.bottom:
+                print("snowman 2 ball hit snowman 1")
+                score.s2_scored()
+                self.kill()
+
+pygame.init()
+
+# functions for textblock
+def text_block(fontsize, text, color, x, y):
+    font = pygame.font.SysFont('chalkduster.ttf', fontsize)
+    text = font.render(str(text), True, color)
+    textRect = text.get_rect()
+    textRect.center = (WIDTH // 2 - x, HEIGHT // 2 - y)
+    screen.blit(text, textRect)
+
+# img
+# # Written by russs123.
+# button.py                                   
+start_img = pygame.image.load('start_btn.png').convert()
+exit_img = pygame.image.load('exit_btn.png').convert()
+start_btn = start_img.get_rect()
+exit_btn = exit_img.get_rect()
+start_btn.center = (WIDTH // 2 - 200, HEIGHT // 2)
+exit_btn.center = (WIDTH // 2 + 200, HEIGHT // 2)
+
+# color
+WHITE = (255, 255, 255)
+LITTLEBOYBLUE = (108, 160, 220)
+EMERALD = (79, 201, 120)
+BLACK = (0, 0, 0)
+BABYBLUE = (137, 207, 240)
+BLUE = (0, 32, 255)
+
+# wall
+wallRect = pygame.Rect(WIDTH / 2 - 20, 250, 40, HEIGHT - 250)
+snowbackground = pygame.Rect(0, 300, WIDTH, HEIGHT - 300)
+
+# snow background
+snow = []
+for i in range(150):
+    x = random.randrange(0,WIDTH)
+    y = random.randrange(0, HEIGHT)
+    snow.append([x, y])
+
+# make groups
+s1 = Snowman1()
+s2 = Snowman2()
+snowman_group = pygame.sprite.Group()
+snowman_group.add(s1)
+snowman_group.add(s2)
+
+snowball_group = pygame.sprite.Group()
+
+score = Score()
+
+running = True
+while running:
+    if currn_screen == 'main_menu':
+        # EVENT HANDLING
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+            elif event.type == QUIT:
+                running = False
+            elif event.type == MOUSEBUTTONDOWN:
+                print(event.pos)
+
+        # # MAIN_MENU
+        if currn_screen == 'main_menu':
+            # drawing
+            screen.fill(BABYBLUE)
+            # snow background
+            for s in snow:
+                s[1] += 1
+                pygame.draw.circle(screen, WHITE, s, 5)
+                if s[1] > HEIGHT:
+                    s[1] = 0
+                    s[0] = random.randrange(WIDTH)
+            text_block(150, 'SNOW FIGHT', BLUE, 0, 200) 
+            screen.blit(start_img, start_btn)
+            screen.blit(exit_img, exit_btn)
+        # event
+            for event in pygame.event.get():
+                if event.type == MOUSEBUTTONDOWN:
+                    pos = event.pos
+                    # click btn
+                    if start_btn.collidepoint(pos):
+                        print('start')
+                        # switch scrren
+                        currn_screen = 'game_playing_screen'
+                    elif exit_btn.collidepoint(pos):
+                        # exit game
+                        print
+                        pygame.quit()
+    # playing game
+    elif currn_screen == 'game_playing_screen':
+        # drawing 
+        screen.fill(LITTLEBOYBLUE)
+        # display snow background
+        for s in snow:
+            s[1] += 1
+            pygame.draw.circle(screen, WHITE, s, 5)
+            if s[1] > HEIGHT:
+                s[1] = 0
+                s[0] = random.randrange(WIDTH)
+        pygame.draw.rect(screen, WHITE, snowbackground)
+        pygame.draw.rect(screen, EMERALD, wallRect)
+
+        # shooting snowball
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LSHIFT:
+                    snowball_group.add(s1.shoot_snowball())
+                elif event.key == pygame.K_SPACE:
+                    snowball_group.add(s2.shoot_snowball())
+
+        # draw and update currn state of player and snowball        
+        snowman_group.draw(screen)
+        snowman_group.update()
+        snowball_group.draw(screen)
+        snowball_group.update(s1, s2, score)
+        
+        # drawing score
+        score.draw_score()
+        
+        # score and game over
+        if score.s1_score == 3 or score.s2_score == 3:
+            score.reset_score()
+            s1.reset_position()
+            s2.reset_position()
+            currn_screen = 'game over screen'
+
+    if currn_screen == 'game over screen':
+        # drawing
+        screen.fill(LITTLEBOYBLUE)
+        text_block(150, 'GAME OVER', BLACK, 0, 200)
+        screen.blit(start_img, start_btn)
+        screen.blit(exit_img, exit_btn)
+        # event
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN:
+                pos = event.pos
+                if start_btn.collidepoint(pos):
+                    print('start')
+                    currn_screen = 'game_playing_screen'
+                elif exit_btn.collidepoint(pos):
+                    print
+                    pygame.quit()
+        
+
+    pygame.display.flip()
+    clock.tick(60)
+    #---------------------------
+
+
+pygame.quit()
