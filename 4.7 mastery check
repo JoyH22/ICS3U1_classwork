@@ -1,0 +1,16 @@
+# Printing out all characters in a string.
+name = input('name: ')
+
+for char in name:
+    print(char)
+
+# Building a new string based on an original string.
+name = input('name: ')
+new_string = ""
+
+for char in name:
+    if char in 'aieou':
+        new_string += '-'
+    else:
+        new_string += char
+print(new_string)
